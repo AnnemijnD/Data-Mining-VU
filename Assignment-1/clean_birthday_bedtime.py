@@ -37,18 +37,18 @@ def get_year(line):
 
 		if str(y) in line:
 			year = str(y)
-			break
-
-	# try to extract years like '93'
-		for y in range(32,100):
-
-			if str(y) in line:
-				year = '19' + str(y)
-				break
+			return(year)
 
 		# give up
 		else:
 			year = "NA"
+
+	# try to extract years like '93'
+	for y in range(32,100):
+
+		if str(y) in line:
+			year = '19' + str(y)
+			return(year)
 
 	return(year)
 
