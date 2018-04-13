@@ -137,6 +137,11 @@ def get_day(line, year):
 
 	return(day)
 
+
+data_frame = ''
+data_frame += 'day' + '\t' + 'month' + '\t' + 'year' + '\n'
+data_frame += '' + '\t' + '' + '\t' + '' + '\n'
+
 # clean the data for all samples
 for i in new_data[2:]:
 
@@ -148,4 +153,11 @@ for i in new_data[2:]:
 	# format day-month-year
 	date = str(day) + '-' + str(month) + '-' + str(year)
 
-	print(i[0].lower() + ' --> ' + date)
+	data_frame += str(day) + '\t' + str(month) + '\t' + str(year) + '\n'
+
+	file = open('birthdays.csv', 'w')
+	file.write(data_frame)
+	file.close()
+	#print(i[0].lower() + ' --> ' + date)
+
+
