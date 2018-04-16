@@ -5,6 +5,8 @@ registerDoMC(cores = 4)
 
 # load data
 data = read.csv('assignments/Data-Mining-VU/Assignment-1/2. Titanic/train.csv')
+
+# exclude samples with NA's
 data = na.exclude(data)
 
 # maybe exclude ID, Name, Ticket and Cabin...
