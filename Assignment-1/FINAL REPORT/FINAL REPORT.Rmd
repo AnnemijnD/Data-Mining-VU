@@ -1,11 +1,72 @@
 ---
-title: "Report: Assignment 1 - basic"
-author: "group 27"
-date: "20 April 2018"
+title: "Report: Assignment 1 - Basic"
+author: "Tanjina Islam (2609513, vu-netID:tim500), Konrad Karas (2624767, vu-netID:kks206) and Izak de Kom (2629935, vu-netID:ikm700), group 27"
+date: "22 April 2018"
 output: pdf_document
 fontsize: 11pt
 highlight: tango
 ---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Task 1: Explore a small dataset
+
+## Data preprocessing
+We kept the following features in our preprocessed dataset:
+```{r}
+data = read.csv('ODI-2018_clean.csv')
+colnames(data)
+```
+The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned with the 'GoodDay_cleanup.R' script using exact string matching and the levenstein distance coefficient.
+
+## Exploratory data analysis
+The cleaned data consisted of 218 samples and 14 features:
+```{r}
+nrow(data)
+ncol(data)
+```
+
+More men participate in the data mining techniques course:
+```{r}
+pie(table(data$What.is.your.gender.), col = rainbow(3), labels = c("Unknown: 4","Females: 63","Males: 150"))
+```
+\
+Figure 1. Pie chart showing the gender distribution in the data mining techniques course.\
+\
+
+The birth years distribution (left out two students who were born in 1768 and 1931):
+```{r}
+plot(table(data$birth_year), xlab = "Year", ylab = "Number of students", xlim = c(1981,2000))
+```
+\
+
+Figure 2. Birth year distribution in the data mining techniques course.\
+\
+
+A short description of the answers of the 'Chocolate makes you....' question. First, the data is converted in a frequency table using the `table` function. Then the `names` are redefined to define shorter class names. Finally, the data is plotted in figure 2.
+```{r}
+choc = table(data$Chocolate.makes.you.....)
+names(choc) = c("NA", "fat", "No idea", "Neither", "slim", "unknown")
+barplot(choc)
+```
+\
+
+Figure 3. Chocolate makes you.... Answer frequencies.
+
+# Basic classification/regression
+A simple reression using gender as dependent variable and the 'chocolate makes you...' as independent variable:
+```{r, warning=FALSE, message=FALSE}
+library(boot)
+glm = glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial')
+summary(glm)
+# cross validation:
+cv.glm(data[,c(6,7)],glm)
+```
+
+There seems to be no clear relationship between the answer type and the gender.
 
 ```{r, echo=FALSE}
 library(knitr)
@@ -215,21 +276,33 @@ F1 : 0.7437
 
 For Kaggle competition we decided to use Conditional inference trees as it gives us higher results in included evaluation factors.
 
-We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard. This result also matches into expected Confidence Intervals calculated during evaluation.
-
----------------
-Task 3: Research and theory
----------------
-
----------------
-Task 3a
----------------
+We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard (username VUDM27). This result also matches into expected Confidence Intervals calculated during evaluation.
 
 
+# Task 3: Research and theory
 
----------------
-Task 3b
----------------
+## Task 3.A – Research: State of the art solutions (10 points)
+**Data mining competition**: ["Planet: Understanding the Amazon from Space"](https://www.kaggle.com/c/planet-understanding-the-amazon-from-space), July 2017\
+\
+In this data mining competition, the participants were provided with a dataset consisting of over 40,000 satelite images. Each image had a resolution of 256 by 256 pixels, and covered an area of approximately 950 by 950 meters. The satelite images were captured above the Amazon in South-America. The goal of the competition was to successfully classify these satelite images. Each image could be classified into multiple classes:\
+\
+- **Atmospheric conditions**: clear, partly cloudy, cloudy, and haze\
+- **Common land cover and land use types**: rainforest, agriculture, rivers, towns/cities, roads, cultivation, and bare ground\
+- **Rare land cover and land use types**: slash and burn, selective logging, blooming, conventional mining, artisanal mining, and blow down\
+\
+The participants' model predictions were evaluated with their mean F2 score. This score determines the model prediction accuracy using the precision and recall measures. The formula of the score:\
+![](f2_formula.png)
+\
+The winner of the competition was a Kaggle user named ["bestfitting"](https://www.kaggle.com/bestfitting). He managed to win the competition by fine-tuning 11 convolutional neural networks (CNN's), and using these CNN's to build an ensemble model. This ensemble model was used to predict the final classes.\
+\
+The pre-processing step consisted of resizing the satelite images, removing haze from the images, and augmenting the data (e.g. flipping, rotating and transposing). Next, one *simplenet*, one *inceptionv3*, five *resnet* and four *densenet* CNN's were trained on the labeled training data. The resulting models were then ensembled by using a ridge regression model, allowing for the selection of the strongest models for each label prediciton.\
+\
+The main reasons why this model won the competition was the creation of an ensemble model. As different models had different capabilities on each class label, the combination of the models resulted in a higher accuracy.
+\
+![**Figure 1.** Modeling workflow with pre-processing (left), model training (center)\ and predicting (right).](amazon_models.png)
+
+
+# Task 3.B – Theory: MSE verse MAE
 
 ```{r, echo=FALSE, warning=FALSE,results='hide',message=FALSE}
 library(multcomp)
@@ -396,10 +469,7 @@ If we look into the *importance()*  function to calculate the importance of each
 
 If we perform overall evaluation and compare MSE and MAE for all four models we can see that using random forest regression the model, rf1 with *Heating.Load* as response variable has lower error rate for both MSE = 1.36  and MAE = 0.907 compared to other models. For regression tree model both rt1 and rt2 produced relatively higher MSE values though MAE values did not varry significantly.
 
----------------
-Task 3c
----------------
-
+# Task 3.C – Theory: Analyze a less obvious dataset
 
 ```{r, echo=FALSE, warning=FALSE,results='hide',message=FALSE}
 # For Naive Bayes Modelling
