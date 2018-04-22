@@ -316,13 +316,10 @@ attach(energy_efficiency)
 ```
 
 
-## Mean Squared Error(MSE)
-The mean squared error (MSE) of an estimator measures the average of the squares of the errors that is, the difference between the actuals and predicted values.
+## Mean Squared Error(MSE) and Mean Absolute Error(MAE)
+
 **\[MSE = \frac{1}{n}\sum_{i=1}^{n}{(Y_i - \hat{Y_i})^2}\]**Where, *$\hat{Y_i}$* is a vector of n predictions and *Y* is the vector of observed values of the variable being predicted. 
  
-## Mean Absolute Error(MAE)
-
-The mean absolute error(MAE) measures the mean of the absolute errors that is, the absolute value of the difference between the forecasted value and the actual value. MAE tells us how big of an error we can expect from the forecast on average.
 **\[MAE = \frac{1}{n}\sum_{i=1}^{n}{|Y_i - \hat{Y_i}|}\]**Where, *$\hat{Y_i}$* is a vector of n forcasts and *Y* is the vector of actual values of the variable being predicted. 
 
 ## MSE Vs MAE
@@ -343,16 +340,10 @@ To calculate MSE and MAE of different regression methods we used the *Energy_eff
 
 The dataset contains the following eight attributes or features(X1,X2,....X8) along with two response variables(Y1,Y2):
 
-*	Relative Compactness(X1) 
-* Surface Area(X2) 
-* Wall Area(X3) 
-* Roof Area(X4) 
-* Overall Height(X5) 
-* Orientation(X6) 
-* Glazing Area(X7)
-* Glazing Area Distribution(X8)
-* Heating Load(Y1)
-* Cooling Load(Y2)
+-	Relative Compactness(X1) $*$ Surface Area(X2) $*$ Wall Area(X3) $*$ Roof Area(X4) 
+- Overall Height(X5) - Orientation(X6) $*$ Glazing Area(X7) 
+- Glazing Area Distribution(X8)
+- Heating Load(Y1) $*$ Cooling Load(Y2)
 
 It is important to implement energy efficiency in building to mitigate the impact of climate change. Due to the high demand for energy and unsustainable supplies, energy efficiency in building plays a vital role reducing energy costs and greenhouse gas emissions. Therefore, studying this dataset to evaluate how well energy is being used there to cut out the costs which will be helpful to have a ECO-friendly environment.
 
@@ -554,7 +545,7 @@ The *SmsCollection* dataset contains text messages only. Since we are only deali
 
 In general, almost all the classifiers use a conditional probability model to classify data. Looking at the samples we can see that they are mainly concerning about classifying the messages into a two class problem as spam or ham. Among 5574 text messages there are 4827 messages categorized as ham and the rest 747 messages are classified as spam. We generate a barplot of it. 
 
-```{r,echo=FALSE, fig.height=4, fig.width=3, fig.align='center',fig.show='hold'}
+```{r,echo=FALSE, results= 'hide', fig.height=4, fig.width=3, fig.align='center',fig.show='hold', include=FALSE}
 barplot(table(label_apply),
         main="Count of SMS type",
         xlab="label",
@@ -638,10 +629,7 @@ pander(ft_df, style="rmarkdown",
 
 Using prop.table() we converted number of spam/ham messages of both sms train and test labels into fractional values and preserved those proportions into our train and test dataset. Looking into the above table we can see that 86.6% of the messages correspond to legitimate messages (ham) and 13.4% to spam messages which follows the same proportion in each of our dataset perfectly.
 
-We created a wordcloud from the cleaned vcorpus to look at the most frequent words in the available bag of words.
-We also created seperate wordclouds for spam and ham messages where most frequent words appeared in larger font and less frequent words in smaller font.
-
-```{r, echo=FALSE, fig.height=5.5, fig.width=7.5, fig.align='left', warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.height=5.5, fig.width=7.5, fig.align='left', warning=FALSE, message=FALSE, results='hide', include=FALSE}
 # wordcloud(sms_corpus_clean, min.freq = 60, random.order = FALSE)
 spam <- subset(sms_raw_data, label == "spam")
 ham  <- subset(sms_raw_data, label == "ham")
