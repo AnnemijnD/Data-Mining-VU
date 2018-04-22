@@ -55,6 +55,7 @@ Figure 3. Chocolate makes you.... Answer frequencies.
 ## Basic classification/regression
 A simple reression using gender as dependent variable and the 'chocolate makes you...' as independent variable:
 ```{r}
+library(boot)
 glm = glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial')
 summary(glm)
 # cross validation:
