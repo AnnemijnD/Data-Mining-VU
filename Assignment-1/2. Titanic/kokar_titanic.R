@@ -98,3 +98,43 @@ submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
 write.csv(submit, file = "ciforest.csv", row.names = FALSE)
 
 
+# evaluation
+# split for train/test data
+trainIndex = createDataPartition(train$Survived, p = .7, list = FALSE)
+eval_train = train[ trainIndex,]
+
+eval_trainTMP <- NULL
+eval_trainTMP$Survived <- eval_train$Survived
+eval_trainTMP$Pclass <- eval_train$Pclass
+eval_trainTMP$TicketType <- eval_train$TicketType
+eval_trainTMP$Sex <- eval_train$Sex
+eval_trainTMP$Deck <- eval_train$Deck
+eval_trainTMP$Age <- eval_train$Age
+eval_trainTMP$SibSp <- eval_train$SibSp
+eval_trainTMP$Parch <- eval_train$Parch
+eval_trainTMP$Fare <- eval_train$Fare
+eval_trainTMP$Embarked <- eval_train$Embarked
+eval_trainTMP$Title <- eval_train$Title
+eval_trainTMP$FamilySize <- eval_train$FamilySize
+eval_trainTMP$FamilyID <- eval_train$FamilyID
+
+eval_train <- NULL
+eval_train <- eval_trainTMP
+
+eval_test  = train[-trainIndex,]
+eval_act <- factor(eval_test$Survived)
+
+set.seed(415)
+fit_cf <- cforest(as.factor(Survived) ~ Pclass + TicketType + Sex + Deck + Age + SibSp + Parch + Fare + Embarked + Title + FamilySize + FamilyID,
+               data = eval_train, controls=cforest_unbiased(ntree=2000, mtry=3)) 
+pred_cf <- predict(fit_cf, eval_test, OOB=TRUE, type = "response")
+
+library(caret)
+caret::confusionMatrix(pred_cf, eval_act, positive="1", mode="everything")
+
+trainControl <- trainControl(method="repeatedcv", number=10, repeats=3)
+metric <- "Accuracy"
+eval_train <- as.data.frame(unclass(eval_train))
+fit_nb <- train(as.factor(Survived)~., data=eval_train, method="knn", metric=metric, trControl=trainControl)
+blelbe <- predict(fit_nb,eval_test)
+caret::confusionMatrix(predict(fit_nb,eval_test),eval_act, positive="1", mode="everything")
