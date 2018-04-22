@@ -1,6 +1,8 @@
 ---
 title: "A1-Basic"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +16,7 @@ We kept the following features in our preprocessed dataset:
 data = read.csv('ODI-2018_clean.csv')
 colnames(data)
 ```
-The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned using the 'GoodDay_cleanup.R' script.
+The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned with the 'GoodDay_cleanup.R' script using exact string matching and the levenstein distance coefficient.
 
 ## Exploratory data analysis
 The cleaned data consisted of 218 samples and 14 features:
@@ -51,15 +53,9 @@ barplot(choc)
 Figure 3. Chocolate makes you.... Answer frequencies.
 
 ## Basic classification/regression
-Let's try to predict the gender of samples using the features in the datases.
-
+A simple reression using gender as dependent variable and the 'chocolate makes you...' as independent variable:
 ```{r}
-library(caret)
-library(doMC)
-# parallel processing: set number of cores
-registerDoMC(cores = 4)
-# split for train/test data
-trainIndex = createDataPartition(data$Survived, p = .7, list = FALSE)
-train = data[ trainIndex,]
-test  = data[-trainIndex,]
+summary(glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial'))
 ```
+
+There seems to be no clear relationship between the answer type and the gender.
