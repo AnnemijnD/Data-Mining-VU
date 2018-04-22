@@ -1,0 +1,65 @@
+---
+title: "A1-Basic"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Task 1.A – Exploration
+## Data preprocessing
+We kept the following features in our preprocessed dataset:
+```{r}
+data = read.csv('ODI-2018_clean.csv')
+colnames(data)
+```
+The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned using the 'GoodDay_cleanup.R' script.
+
+## Exploratory data analysis
+The cleaned data consisted of 218 samples and 14 features:
+```{r}
+nrow(data)
+ncol(data)
+```
+
+More men participate in the data mining techniques course:
+```{r}
+pie(table(data$What.is.your.gender.), col = rainbow(3), labels = c("Unknown: 4","Females: 63","Males: 150"))
+```
+\
+Figure 1. Pie chart showing the gender distribution in the data mining techniques course.\
+\
+
+The birth years distribution (left out two students who were born in 1768 and 1931):
+```{r}
+plot(table(data$birth_year), xlab = "Year", ylab = "Number of students", xlim = c(1981,2000))
+```
+\
+
+Figure 2. Birth year distribution in the data mining techniques course.\
+\
+
+Interesting information about chocolate:
+```{r}
+choc = table(data$Chocolate.makes.you.....)
+names(choc) = c("NA", "fat", "No idea", "Neither", "slim", "unknown")
+barplot(choc)
+```
+\
+
+Figure 3. Chocolate makes you.... Answer frequencies.
+
+## Basic classification/regression
+Let's try to predict the gender of samples using the features in the datases.
+
+```{r}
+library(caret)
+library(doMC)
+# parallel processing: set number of cores
+registerDoMC(cores = 4)
+# split for train/test data
+trainIndex = createDataPartition(data$Survived, p = .7, list = FALSE)
+train = data[ trainIndex,]
+test  = data[-trainIndex,]
+```
