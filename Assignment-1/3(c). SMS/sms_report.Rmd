@@ -179,17 +179,18 @@ pander(ft_df, style="rmarkdown",
 Using prop.table() we converted number of spam/ham messages of both sms train and test labels into fractional values and preserved those proportions into our train and test dataset. Looking into the above table we can see that 86.6% of the messages correspond to legitimate messages (ham) and 13.4% to spam messages which follows the same proportion in each of our dataset perfectly.
 
 We created a wordcloud from the cleaned vcorpus to look at the most frequent words in the available bag of words.
-We also created seperate wordcloud for spam and ham messages where most frequent words appeared in larger font and less frequent words in smaller font.
+We also created seperate wordclouds for spam and ham messages where most frequent words appeared in larger font and less frequent words in smaller font.
 
-```{r, echo=FALSE, fig.height=5, fig.width=7,fig.show='hold', warning=FALSE, message=FALSE}
+```{r, echo=FALSE, fig.height=5.5, fig.width=7.5, fig.align='left', warning=FALSE, message=FALSE}
 # wordcloud(sms_corpus_clean, min.freq = 60, random.order = FALSE)
 spam <- subset(sms_raw_data, label == "spam")
 ham  <- subset(sms_raw_data, label == "ham")
+par(mfrow=c(1,2))
 wordcloud(spam$text, max.words = 50, scale = c(5, 0.5))
 wordcloud(ham$text, max.words = 50, scale = c(3.5, 0.5))
 ```
 
-Looking the above wordclouds we found that the spam contains "call", "now", "free", "mobile" as most frequent words whereas ham contains frequent words such as “will”, “get”, “now”,“just”, “can”. Also spam(first wordcloud) showed extreme frequency in it's wordcloud. Since, it seemed that our datasets contains distintive words, we hope our choosen classifier algorithm(Naive Bayes) will be a good fit for sms prediction.
+Looking the above wordclouds we found that the spam contains "call", "now", "free", "mobile" as most frequent words whereas ham contains frequent words such as “will”, “get”, “now”,“just”, “can”. Also spam(on left) showed extreme frequency in it's wordcloud. Since, it seemed that our datasets contains distintive words, we hope our choosen classifier algorithm(Naive Bayes) will be a good fit for sms prediction.
 
 ```{r, echo=FALSE}
 # most frequent words (appeared at least 5 times in dataset)
@@ -254,3 +255,4 @@ To solve this task we classified text messages as ham or spam using some basic n
 1. https://en.wikipedia.org/wiki/Naive_Bayes_classifier
 2. https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering
 3. https://www.r-bloggers.com/understanding-naive-bayes-classifier-using-r/
+4. https://datascienceplus.com/text-message-classification/
