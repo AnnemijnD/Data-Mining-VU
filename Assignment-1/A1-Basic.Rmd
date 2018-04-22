@@ -42,7 +42,7 @@ plot(table(data$birth_year), xlab = "Year", ylab = "Number of students", xlim = 
 Figure 2. Birth year distribution in the data mining techniques course.\
 \
 
-Interesting information about chocolate:
+A short description of the answers of the 'Chocolate makes you....' question. First, the data is converted in a frequency table using the `table` function. Then the `names` are redefined to define shorter class names. Finally, the data is plotted in figure 2.
 ```{r}
 choc = table(data$Chocolate.makes.you.....)
 names(choc) = c("NA", "fat", "No idea", "Neither", "slim", "unknown")
@@ -55,7 +55,10 @@ Figure 3. Chocolate makes you.... Answer frequencies.
 ## Basic classification/regression
 A simple reression using gender as dependent variable and the 'chocolate makes you...' as independent variable:
 ```{r}
-summary(glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial'))
+glm = glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial')
+summary(glm)
+# cross validation:
+cv.glm(data[,c(6,7)],glm)
 ```
 
 There seems to be no clear relationship between the answer type and the gender.
