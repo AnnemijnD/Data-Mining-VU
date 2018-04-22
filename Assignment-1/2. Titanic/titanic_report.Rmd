@@ -131,7 +131,7 @@ data$Deck <- factor(data$Deck)
 ```
 
 Analysing *Cabin* attribute we figured out that each cabin number consists of Deck Level and Room number (like C40 => Deck C, Room 40).
-Because Deck Level could play sigificant role in evacuation, we assumed thet it's a siginicant attribute.
+Because Deck Level could play important role in evacuation, we assumed thet it's a siginicant attribute.
 We decided to create a new attribute called Deck and we assigned relevant Deck Level to each passenger.
 Unfortunately, not every passenger had a Cabin number assigned, in such a case we marked Deck as 'U'.
 
@@ -154,7 +154,7 @@ data$TicketType <- sapply(data$Ticket, FUN=function(x) {
 data$TicketType <- factor(data$TicketType)
 ```
 
-Lokking into ticket numbers we can see that some tickets have common prefix that could refer to Ticket Type of place of purchase (example: STON/02 42342).
+Looking into ticket numbers we can see that some tickets have common prefix that could refer to Ticket Type of place of purchase (example: STON/02 42342).
 We decided to retrieve that ticket prefix and create a new attribute for each passenger.
 If ticket didn't have any prefix, we marked TicketType as 'num'.
 
@@ -215,4 +215,4 @@ F1 : 0.7437
 
 For Kaggle competition we decided to use Conditional inference trees as it gives us higher results in included evaluation factors.
 
-We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard. This result also matches into expected Confidence Intervals calculateg during evaluation.
+We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard. This result also matches into expected Confidence Intervals calculated during evaluation.
