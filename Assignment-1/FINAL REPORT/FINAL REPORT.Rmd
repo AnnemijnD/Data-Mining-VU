@@ -397,13 +397,6 @@ If we look into the *importance()*  function to calculate the importance of each
 
 If we perform overall evaluation and compare MSE and MAE for all four models we can see that using random forest regression the model, rf1 with *Heating.Load* as response variable has lower error rate for both MSE = 1.36  and MAE = 0.907 compared to other models. For regression tree model both rt1 and rt2 produced relatively higher MSE values though MAE values did not varry significantly.
 
-## References
-
-1. https://en.wikipedia.org/wiki/Mean_squared_error
-2. https://en.wikipedia.org/wiki/Mean_absolute_error
-3. http://archive.ics.uci.edu/ml/datasets/Energy+efficiency#
-4. A. Tsanas, A. Xifara: 'Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools', Energy and Buildings, Vol. 49, pp. 560-567, 2012 (the paper can be accessed from [weblink](http://people.maths.ox.ac.uk/tsanas/publications.html))
-
 ---------------
 Task 3c
 ---------------
@@ -658,3 +651,7 @@ To solve this task we classified text messages as ham or spam using some basic n
 2. https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering
 3. https://www.r-bloggers.com/understanding-naive-bayes-classifier-using-r/
 4. https://datascienceplus.com/text-message-classification/
+5. https://en.wikipedia.org/wiki/Mean_squared_error
+6. https://en.wikipedia.org/wiki/Mean_absolute_error
+7. http://archive.ics.uci.edu/ml/datasets/Energy+efficiency#
+8. A. Tsanas, A. Xifara: 'Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools', Energy and Buildings, Vol. 49, pp. 560-567, 2012 (the paper can be accessed from [weblink](http://people.maths.ox.ac.uk/tsanas/publications.html))
