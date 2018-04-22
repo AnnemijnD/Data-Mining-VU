@@ -15,9 +15,9 @@ test <- read.csv("test.csv")
 test$Survived <- NA
 data <- rbind(train, test)
 ```
----------------
-Task 2: Kaggle Competition: Titanic: Machine Learning from Disaster
----------------
+
+# Task 2: Kaggle Competition: Titanic: Machine Learning from Disaster
+
 
 *The sinking of the RMS Titanic is one of the most infamous shipwrecks in history.  On April 15, 1912, during her maiden voyage, the Titanic sank after colliding with an iceberg, killing 1502 out of 2224 passengers and crew. This sensational tragedy shocked the international community and led to better safety regulations for ships.*
 
@@ -52,7 +52,7 @@ In datasets we can distinguish several (12) columns:
 
 Lets make a closer look into several variables.
 
-## Name
+### Name
 In given dataset we can see that *Name* attribute contains string with passenger's name, surname and title.
 
 example: *Allison, Master. Hudson Trevor*
@@ -61,14 +61,14 @@ Fortunately, all rows in *Name* column follow the same string pattern (*surname*
 Thanks to this fact, we will be able to retrieve more additional infrmation about passengers, like common surnames or titles.
 
 
-# Sex
+### Sex
 ```{r, echo=FALSE, fig.height=4, fig.width=3, fig.align='center'}
 barplot(table(data$Sex))
 ```
 
 Investigating Sex attribute we can see that there were 466 females and 843 males onboard. That gives us the first easy grouping of passengers.
 
-# Age
+### Age
 
 ```{r, echo=FALSE, fig.height=4, fig.width=3, fig.align='center'}
 hist(data$Age)
@@ -80,13 +80,13 @@ Regarding Age attribute, we can see that this variable varies up to 80 with mean
 
 After investigation of given dataset we can distingush columns that seem to be useful for further processing to retrieve even more data. In such an approach we are able to create additional columns with relevant variables that sould result in better prediciton accuracy.
 
-## Feature: Title
+### Feature: Title
 
 As mentioned before, Name column contains not only name and surname of passenger but also a title (like Sir., Mr., Mrs., ...). 
 Following common pattern (*surname*, *title* *first name*) we can retrieve additional Column in our dataset that would group our passenger by Title.
 In addition, groups of unique similar titles were replaced by the tame variable (like 'Capt', 'Don', 'Major', 'Sir' => 'Sir').
 
-As a result we obtained a fixed set of values:
+As a result we obtained a fixed set of values with 11 levels.
 ```{r, echo=FALSE}
 data$Name <- as.character(data$Name)
 data$Title <- sapply(data$Name, FUN=function(x) {strsplit(x, split='[,.]')[[1]][2]})
@@ -95,10 +95,9 @@ data$Title[data$Title %in% c('Mme', 'Mlle')] <- 'Mlle'
 data$Title[data$Title %in% c('Capt', 'Don', 'Major', 'Sir')] <- 'Sir'
 data$Title[data$Title %in% c('Dona', 'Lady', 'the Countess', 'Jonkheer')] <- 'Lady'
 data$Title <- factor(data$Title)
-summary(data$Title)
 ```
 
-## Feature: Family
+### Feature: Family
 
 ```{r, echo=FALSE}
 data$FamilySize <- data$SibSp + data$Parch + 1
@@ -117,7 +116,7 @@ Our assumptions:
 
 As a result we obtained Family attribute with 97 levels.
 
-## Feature: Deck
+### Feature: Deck
 
 ```{r, echo=FALSE}
 data$Cabin <- as.character(data$Cabin)
@@ -141,7 +140,7 @@ Result:
 summary(data$Deck)
 ```
 
-## Feature: TicketType
+### Feature: TicketType
 ```{r, echo=FALSE,include=FALSE}
 data$Ticket <- as.character(data$Ticket)
 data$TicketType <- sapply(data$Ticket, FUN=function(x) {
@@ -161,7 +160,7 @@ If ticket didn't have any prefix, we marked TicketType as 'num'.
 
 As a result we obtained TicketType factor with 51 levels.
 
-## Missing values
+### Missing values
 
 ```{r, echo=FALSE}
 Agefit <- rpart(Age ~ Pclass + Sex + SibSp + Parch + Fare + Embarked + Title + FamilySize, 
@@ -185,7 +184,7 @@ Within all calumns we decided that only few of them play siginificant role in pr
 
 Chosen factors: *Pclass, TicketType, Sex, Deck, Age, SibSp, Parch, Fare, Embarked, Title, FamilySize, FamilyID*
 
-## Creating a steup
+### Creating a steup
 
 To evaluate classifiers we will need to create a proper setup. In this case we decided to use *train* data from Kaggle as it contains *Survived* column. For evaluation purposes we decided to split the data for training and testing sets with ratio 70/30 (70% - training, 30% - testing). While splitting the data we based on random ordering.
 
@@ -200,13 +199,13 @@ Factors that we took into account:
 * Kappa - accuracy through random predicitons
 * F1 - model that takes recall and precision into account
 
-## Evaluation of k-Nearest Neighbour Classification
+### Evaluation of k-Nearest Neighbour Classification
 Accuracy : 0.6929         
 95% CI : (0.6338, 0.7477)         
 Kappa : 0.3338         
 F1 : 0.5638         
 
-## Evaluation of Conditional inference trees
+### Evaluation of Conditional inference trees
 Accuracy : 0.809         
 95% CI : (0.7566, 0.8543)         
 Kappa : 0.5929            
