@@ -75,12 +75,6 @@ hist(data$Age)
 
 Regarding Age attribute, we can see that this variable varies up to 80 with mean around 23
 
-## Fare
-
-```{r, echo=FALSE}
-summary(data$Fare)
-```
-
 ## Feature Engineering
 
 After investigation of given dataset we can distingush columns that seem to be useful for further processing to retrieve even more data. In such an approach we are able to create additional columns with relevant variables that sould result in better prediciton accuracy.
@@ -186,14 +180,39 @@ Also Fare column had some missing values. In such a case we replaces missing val
 
 By analysing our data and engineering some additional features we have enriched our dataset. 
 
-Within all calumns that we have right now we decided that only few of them play siginificant role in predictions.
+Within all calumns we decided that only few of them play siginificant role in predictions.
 
 Chosen factors: *Pclass, TicketType, Sex, Deck, Age, SibSp, Parch, Fare, Embarked, Title, FamilySize, FamilyID*
 
-------------
-HERE GOES THE PART OF CHOOSING PROPER ALGORITHMS
-------------
+## Creating a steup
 
-We decided to choose classification algorithm based on conditional inference trees. !!!!! WHY !!!!!
+To evaluate classifiers we will need to create a proper setup. In this case we decided to use *train* data from Kaggle as it contains *Survived* column. For evaluation purposes we decided to split the data for training and testing sets with ratio 70/30 (70% - training, 30% - testing). While splitting the data we based on random ordering.
 
-We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard.
+For evaluation we decided to use two non-linear algorithms: k-Nearest Neighbour Classification and Conditional inference trees.
+Both classifiers were trained and tested with the same sets of data.
+For evaluation analysis we used Confusion Matrix.
+
+Factors that we took into account:
+
+* Accuracy - how well results were predicted
+* 95 CI - confidence intervals, our final score should match into calculated intervals
+* Kappa - accuracy through random predicitons
+* F1 - model that takes recall and precision into account
+
+## Evaluation of k-Nearest Neighbour Classification
+Accuracy : 0.6929         
+95% CI : (0.6338, 0.7477)         
+Kappa : 0.3338         
+F1 : 0.5638         
+
+## Evaluation of Conditional inference trees
+Accuracy : 0.809         
+95% CI : (0.7566, 0.8543)         
+Kappa : 0.5929            
+F1 : 0.7437         
+
+## Kaggle Submission
+
+For Kaggle competition we decided to use Conditional inference trees as it gives us higher results in included evaluation factors.
+
+We have submited our Prediction in Kaggle system and obtained satisfactory result 0.82296 which is top 3% in leaderboard. This result also matches into expected Confidence Intervals calculateg during evaluation.
