@@ -1,0 +1,258 @@
+---
+title: "Report on SMS Spam Filtering"
+author: "group 27"
+date: "21 April 2018"
+output: pdf_document
+fontsize: 11pt
+highlight: tango
+---
+
+```{r, echo=FALSE, warning=FALSE,results='hide',message=FALSE}
+# For Naive Bayes Modelling
+library(caret)
+library(e1071)
+library(naivebayes)
+# For processing text into corpus
+library(tm)
+# for nice table
+library(pander)
+# For simplifying selections
+library(dplyr)
+# library for parellel processing
+library(doParallel)
+
+library(stringr)
+library(tidyr)
+library(wordcloud)
+options(digits = 3) #Showing only 3 decimals
+# To create a local 4-node snow cluster
+
+num_of_cluster <- makeCluster(detectCores(), type = "SOCK")
+registerDoParallel(num_of_cluster)  # For linux/mac use library(doMC) and registerDoMC(cores = 4)
+
+# Print process Ids
+
+foreach(i=1:length(num_of_cluster)) %dopar% Sys.getpid()
+
+# Method for dispalying frequency into table
+
+frequency_table <- function(x, caption) {
+  
+  round(100*prop.table(table(x)), 1)
+}
+
+# Method for summarise model comparison
+
+summarise_comp <- function(predictive_model) {
+  
+  model_summary <- list(True_Neg=predictive_model$table[1,1],  # True Negatives
+               True_Pos = predictive_model$table[2,2],  # True Positives
+               False_Neg = predictive_model$table[1,2],  # False Negatives
+               False_Pos = predictive_model$table[2,1],  # False Positives
+               accuracy = predictive_model$overall["Accuracy"],  # Accuracy
+               sensitivity = predictive_model$byClass["Sensitivity"])  # Sensitivity
+            
+  lapply(model_summary, round,4)
+}
+
+# Method to convert numeric entries into factors
+convert_counts <- function(x) {
+  x <- ifelse(x > 0, 1, 0)
+  x <- factor(x, levels = c(0, 1), labels = c("Absent", "Present"))
+}
+
+sms_raw_data = read.csv("SmsCollection.csv", header=TRUE, sep="\t", quote="", stringsAsFactors = FALSE)
+```
+
+## Theory: Analyze a less obvious dataset : SMS Spam Filtering
+
+Text message classification requires supervised Natural language processing techniques to filter messages with respect to it's types and maps inputs to it's targeted varaibles based on the learning information which it gets from trained data. 
+
+Our aim is to predict the probabilities of a message being spam or ham. Therefore, we need to perform text mining on unstructured data, fit a predictive model on top of that and suggest improvement if any to increase our proposed model's performance.
+
+## Data Colection
+
+The dataset: *SmsCollection.csv* has been collected from the course website. This dataset is a collection of 5574 text messages in English provided by a UK forum for research purpose. In this dataset, messages are labeled as either *spam* or *ham*. *Ham* stands for legitimate message whereas the type *spam* is used for trashed or unwanted message.
+
+At first we load the data from the source. Then we split label and text and bind them into a dataframe.
+
+```{r, echo=FALSE}
+# Split label and text
+label_split = strsplit(sms_raw_data$label.text, ";")
+label_apply = sapply(label_split , '[', 1)
+
+text_split = strsplit(sms_raw_data$label.text, ";")
+text_apply = sapply(label_split , '[', 2)
+
+# assign new column for label and text 
+sms_raw_data <- data.frame(cbind(label = label_apply, text = text_apply))
+```
+
+## Data exploration
+
+The *SmsCollection* dataset contains text messages only. Since we are only dealing with text messages which are unstructured in nature, so we will need to perform some basic natural language processing technique in order to tokenize those texts, computing the frequencies of words, calculating document-feature matrix and so on.
+
+In general, almost all the classifiers use a conditional probability model to classify data. Looking at the samples we can see that they are mainly concerning about classifying the messages into a two class problem as spam or ham. Among 5574 text messages there are 4827 messages categorized as ham and the rest 747 messages are classified as spam. We generate a barplot of it. 
+
+```{r,echo=FALSE, fig.height=4, fig.width=3, fig.align='center',fig.show='hold'}
+barplot(table(label_apply),
+        main="Count of SMS type",
+        xlab="label",
+        ylab="count",
+        col="lightblue",
+        ylim = c(0,5000))
+```
+
+As we can observe there are more ham messages than spam There are various classifier algorithms to solve this but we found Naive Bayes as the most suitable one for this purpose. Naive Bayes is a simple yet powerful classifier based on Bayes probability theorem which uses conditional probabilty model. It is more suited to categorial variables although it can also be used for continuous variables. Text messages are often noisy and the amount of predictors are way more than the actual samples. Naive Bayes classifier follows conditional independence theorem. Therefore, it assumes that features are independent of one another which is a high bias and this introduced strong bias might be helpful in reducing the variance to achieve better predictions.
+
+## Data Processing and transformation 
+
+```{r, echo=FALSE}
+# randomization
+
+set.seed(12358)
+sms_raw_data <- sms_raw_data[sample(nrow(sms_raw_data)),]
+
+# use label as a factor
+
+sms_raw_data$label <- factor(sms_raw_data$label)
+
+# use text as characters
+
+sms_raw_data$text <- as.character(sms_raw_data$text)
+
+## Data Processing ##
+
+sms_corpus <- VCorpus(VectorSource(sms_raw_data$text))
+```
+We load the samples into a dataframe and use the *label* as a factor while on the otherhand we are using attribute *text* as character.And then we randomize the data frame using `r set.seed(12358) `. To process the text data we transformed the data frame into a volatile corpus as they cannot be directly handled by a data frame. VCorpus converted each of the messages as a document.
+
+In the VCorpus text document each SMS has it's content in raw formatted way. So, before applying Naive Bayes classification algorithm we need to clean up data. It will help the algorithm to perform more efficiently which will eventually increase the accuracy of predictions.
+
+Our data cleaning process includes : conversion of all texts to lowercase, removal of numbers that is neither a spam nor a ham, removal of some common stop words in english such as: “a”,“an”,“the”,“for” etc. that neither indicate spam or ham, punctuation and extra whitespace removal. Finally after completing data cleaning task, final version of the VCorpus were transformed into a Document-Term-Matrix (DTM) that will be taken into account as the basis for the classification.Doing so, we found 7713 unique terms in total for all 5574 entries.
+
+```{r, echo=FALSE,results='hide'}
+sms_corpus_clean <- sms_corpus %>%
+  tm_map(content_transformer(tolower)) %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removeWords, stopwords(kind = "en")) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+
+sms_dtm <- DocumentTermMatrix(sms_corpus_clean)
+sms_dtm
+```
+
+## Generating training and testing dataset
+
+```{r, echo=FALSE,results='hide'}
+train_index <- createDataPartition(sms_raw_data$label, p=0.75, list=FALSE)
+sms_raw_train <- sms_raw_data[train_index,]
+sms_raw_test <- sms_raw_data[-train_index,]
+
+str(sms_raw_train)
+sms_corpus_clean_train <- sms_corpus_clean[train_index]
+sms_corpus_clean_test <- sms_corpus_clean[-train_index]
+sms_dtm_train <- sms_dtm[train_index,]
+sms_dtm_test <- sms_dtm[-train_index,]
+
+sms_train_labels <- sms_raw_train$label
+sms_test_labels  <- sms_raw_test$label
+```
+
+We divided the DTM to generate our training and testing dataset.
+The Document-term-matrix is splited into a trained dataset with the top 75% of the raw sms data, and a tested dataset with the bottom 25% of the raw sms data using the *createDataPartition()* function. Since, we only need "label" attribute of the raw sms dataset we created two classifier labels namely "sms train labels"" and "sms test labels" by splitting with exact same proportions of row that we used before. We made these two classifier labels to use them for Naive Bayes model later on. 
+
+```{r, echo=FALSE}
+
+ft_raw <- frequency_table(sms_raw_data$label)
+ft_train <- frequency_table(sms_train_labels)
+ft_test <- frequency_table(sms_test_labels)
+ft_df <- as.data.frame(cbind(ft_raw, ft_train, ft_test))
+
+colnames(ft_df) <- c("Raw Dataset", "Training Dataset", "Test Dataset")
+
+pander(ft_df, style="rmarkdown",
+       caption=paste0("Frequency comparison among different datasets based on SMS label"))
+```
+
+Using prop.table() we converted number of spam/ham messages of both sms train and test labels into fractional values and preserved those proportions into our train and test dataset. Looking into the above table we can see that 86.6% of the messages correspond to legitimate messages (ham) and 13.4% to spam messages which follows the same proportion in each of our dataset perfectly.
+
+We created a wordcloud from the cleaned vcorpus to look at the most frequent words in the available bag of words.
+We also created seperate wordclouds for spam and ham messages where most frequent words appeared in larger font and less frequent words in smaller font.
+
+```{r, echo=FALSE, fig.height=5.5, fig.width=7.5, fig.align='left', warning=FALSE, message=FALSE}
+# wordcloud(sms_corpus_clean, min.freq = 60, random.order = FALSE)
+spam <- subset(sms_raw_data, label == "spam")
+ham  <- subset(sms_raw_data, label == "ham")
+par(mfrow=c(1,2))
+wordcloud(spam$text, max.words = 50, scale = c(5, 0.5))
+wordcloud(ham$text, max.words = 50, scale = c(3.5, 0.5))
+```
+
+Looking the above wordclouds we found that the spam contains "call", "now", "free", "mobile" as most frequent words whereas ham contains frequent words such as “will”, “get”, “now”,“just”, “can”. Also spam(on left) showed extreme frequency in it's wordcloud. Since, it seemed that our datasets contains distintive words, we hope our choosen classifier algorithm(Naive Bayes) will be a good fit for sms prediction.
+
+```{r, echo=FALSE}
+# most frequent words (appeared at least 5 times in dataset)
+sms_freq_words <- findFreqTerms(sms_dtm_train, lowfreq =  5)
+
+
+sms_dtm_freq_train <- sms_dtm_train[ , sms_freq_words]
+sms_dtm_freq_test <- sms_dtm_test[ , sms_freq_words]
+
+
+sms_train <- apply(sms_dtm_freq_train, MARGIN = 2, convert_counts)
+sms_test  <- apply(sms_dtm_freq_test, MARGIN = 2, convert_counts)
+```
+
+We removed most of the least frequent words from the DTM and created final train and test dataset that we should be using for the training using only the most frequent words that appeared at least 5 times in datasets. The number of columns for each trained and tested datasets are then shrink from 7713 terms to 1193 column (words).
+
+## Training the data using Naive Bayes Model
+
+we already have trained and tested labels respective to the datasets.And we used naive_bayes() to train and build model based on the trained dataset along with it's trained label. Our trained model contained information from both trained and tested DTM whcih have 1193 distict words(possibilities of either spam/ham).
+
+```{r, echo=FALSE, results='hide'}
+# But the following function works for both model
+
+sms_model_1 <- naive_bayes(sms_train, sms_train_labels)
+sms_model_1
+
+sms_model_2 <- naive_bayes(sms_train, sms_train_labels, laplace = 1, usekernel = FALSE)
+sms_model_2
+
+## Evaluate performance ##
+
+sms_test_pred <- predict(sms_model_1, sms_test)
+sms_test_pred_result <- confusionMatrix(sms_test_pred, sms_test_labels, positive="spam")
+sms_test_pred_result
+
+sms_test_pred_2 <- predict(sms_model_2, sms_test)
+sms_test_pred_2_result <- confusionMatrix(sms_test_pred_2, sms_test_labels, positive="spam")
+sms_test_pred_2_result
+
+```
+
+## Evaluate performance
+
+evaluating it's performance we can see that Naive Bayes has accuracy rate 96.77% with sensitivity 78.49% and there are 5 *spam* text messages wrongly classified as ham and 40 *ham* text examples wrongly classified as spam. In order to improve it's performance we used Laplace along with it and laplace lowered both of the false positive and false negative values and increased our accuracy up to 97.56%. The summarised version of their performances are given below into tabular form.
+
+```{r, echo=FALSE}
+# Summarise performance into tabular form
+model_1 <- summarise_comp(sms_test_pred_result)
+model_2 <- summarise_comp(sms_test_pred_2_result)
+model_comp <- as.data.frame(rbind(model_1, model_2))
+rownames(model_comp) <- c("Model-1:[Naive Bayes]", "Model-2:[Naive Bayes+laplace]")
+pander(model_comp, style="rmarkdown", split.tables=Inf, keep.trailing.zeros=TRUE,
+       caption="Performance Table for two models")
+```
+
+## Conclusion
+
+To solve this task we classified text messages as ham or spam using some basic natural language processing and then model a naive Bayes text classifier. There are numerous ways of doing this but using the Naived Bayes classfication algorithm, we obtained more than 97% accuracy in predicting whether a new incoming message is a spam or not based on it's training data.
+
+## References
+
+1. https://en.wikipedia.org/wiki/Naive_Bayes_classifier
+2. https://en.wikipedia.org/wiki/Naive_Bayes_spam_filtering
+3. https://www.r-bloggers.com/understanding-naive-bayes-classifier-using-r/
+4. https://datascienceplus.com/text-message-classification/
