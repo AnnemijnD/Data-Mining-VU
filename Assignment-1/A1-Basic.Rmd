@@ -57,3 +57,5 @@ A simple reression using gender as dependent variable and the 'chocolate makes y
 ```{r}
 summary(glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial'))
 ```
+
+There seems to be no clear relationship between the answer type and the gender.
