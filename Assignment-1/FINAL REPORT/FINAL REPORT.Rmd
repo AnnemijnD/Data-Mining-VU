@@ -1,5 +1,5 @@
 ---
-title: "Titanic report"
+title: "Report: Assignment 1 - basic"
 author: "group 27"
 date: "20 April 2018"
 output: pdf_document
@@ -62,7 +62,7 @@ Thanks to this fact, we will be able to retrieve more additional infrmation abou
 
 
 # Sex
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=4, fig.width=3, fig.align='center'}
 barplot(table(data$Sex))
 ```
 
@@ -70,7 +70,7 @@ Investigating Sex attribute we can see that there were 466 females and 843 males
 
 # Age
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=4, fig.width=3, fig.align='center'}
 hist(data$Age)
 ```
 
