@@ -24,4 +24,7 @@ The pre-processing step consisted of resizing the satelite images, removing haze
 \
 The main reasons why this model won the competition was the creation of an ensemble model. As different models had different capabilities on each class label, the combination of the models resulted in a higher accuracy.
 \
-![**Figure 1.** Modeling workflow with pre-processing (left), model training (center)\ and predicting (right).](amazon_models.png)
+![](amazon_models.png)
+
+\
+**Figure 1.** Modeling workflow with pre-processing (left), model training (center)\ and predicting (right).
