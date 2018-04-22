@@ -23,14 +23,10 @@ colnames(data)
 The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned with the 'GoodDay_cleanup.R' script using exact string matching and the levenstein distance coefficient.
 
 ## Exploratory data analysis
-The cleaned data consisted of 218 samples and 14 features:
-```{r}
-nrow(data)
-ncol(data)
-```
+The cleaned data consisted of 218 samples and 14 features.
 
 More men participate in the data mining techniques course:
-```{r}
+```{r, echo=FALSE, fig.align='center'}
 pie(table(data$What.is.your.gender.), col = rainbow(3), labels = c("Unknown: 4","Females: 63","Males: 150"))
 ```
 \
@@ -38,7 +34,7 @@ Figure 1. Pie chart showing the gender distribution in the data mining technique
 \
 
 The birth years distribution (left out two students who were born in 1768 and 1931):
-```{r}
+```{r, echo=FALSE, fig.align='center'}
 plot(table(data$birth_year), xlab = "Year", ylab = "Number of students", xlim = c(1981,2000))
 ```
 \
@@ -47,7 +43,7 @@ Figure 2. Birth year distribution in the data mining techniques course.\
 \
 
 A short description of the answers of the 'Chocolate makes you....' question. First, the data is converted in a frequency table using the `table` function. Then the `names` are redefined to define shorter class names. Finally, the data is plotted in figure 2.
-```{r}
+```{r, echo=FALSE, fig.align='center'}
 choc = table(data$Chocolate.makes.you.....)
 names(choc) = c("NA", "fat", "No idea", "Neither", "slim", "unknown")
 barplot(choc)
