@@ -8,6 +8,7 @@
 # For Naive Bayes Modelling
 library(caret)
 library(e1071)
+library(naivebayes)
 # For processing text into corpus
 library(tm)
 # for nice table
@@ -46,8 +47,8 @@ summarise_comp <- function(predictive_model) {
                False_Neg = predictive_model$table[1,2],  # False Negatives
                False_Pos = predictive_model$table[2,1],  # False Positives
                accuracy = predictive_model$overall["Accuracy"],  # Accuracy
-               sensitivity = predictive_model$byClass["Sensitivity"],  # Sensitivity
-               specificity = predictive_model$byClass["Specificity"])  # Specificity
+               sensitivity = predictive_model$byClass["Sensitivity"])  # Sensitivity
+          
   lapply(model_summary, round,4)
 }
 
@@ -71,11 +72,18 @@ text_apply = sapply(label_split , '[', 2)
 
 # assign new column for label and text 
 
-sms_raw_data <- transform(sms_raw_data, label = label_apply, text = text_apply)
-
+# sms_raw_data <- transform(sms_raw_data, label = label_apply, text = text_apply)
+sms_raw_data <- data.frame(cbind(label = label_apply, text = text_apply))
+table(label_apply)
+barplot(table(label_apply),
+        main="Count of SMS type",
+        xlab="label",
+        ylab="count",
+        col="lightblue",
+        ylim = c(0,5000))
 # delete unspilted column
 
-sms_raw_data <- sms_raw_data[-c(1)] 
+# sms_raw_data <- sms_raw_data[-c(1)] 
 str(sms_raw_data)
 
 # randomization
