@@ -275,11 +275,11 @@ To calculate MSE and MAE of different regression methods we used the *Energy_eff
 
 The dataset contains the following eight attributes or features(X1,X2,....X8) along with two response variables(Y1,Y2):
 
--	Relative Compactness(X1) - Surface Area(X2) 
-- Wall Area(X3) - Roof Area(X4) 
-- Overall Height(X5) - Orientation(X6) 
-- Glazing Area(X7) - Glazing Area Distribution(X8)
-- Heating Load(Y1) - Cooling Load(Y2)
+$-$	Relative Compactness(X1) $-$ Surface Area(X2) 
+$-$ Wall Area(X3) $-$ Roof Area(X4) 
+$-$ Overall Height(X5) $-$ Orientation(X6) 
+$-$ Glazing Area(X7) $-$ Glazing Area Distribution(X8)
+$-$ Heating Load(Y1) $-$ Cooling Load(Y2)
 
 It is important to implement energy efficiency in building to mitigate the impact of climate change. Due to the high demand for energy and unsustainable supplies, energy efficiency in building plays a vital role reducing energy costs and greenhouse gas emissions. Therefore, studying this dataset to evaluate how well energy is being used there to cut out the costs which will be helpful to have a ECO-friendly environment.
 
