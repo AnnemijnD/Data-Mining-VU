@@ -3,66 +3,35 @@ title: "Report: Assignment 1 - Basic"
 author: "Tanjina Islam (2609513, vu-netID:tim500), Konrad Karas (2624767, vu-netID:kks206) and Izak de Kom (2629935, vu-netID:ikm700), group 27"
 date: "22 April 2018"
 output: pdf_document
-fontsize: 9pt
+fontsize: 8pt
 highlight: tango
 ---
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # Task 1: Explore a small dataset
 
-## Data preprocessing
-We kept the following features in our preprocessed dataset:
-```{r}
-data = read.csv('ODI-2018_clean.csv')
-colnames(data)
-```
-The study program feature was cleaned using the 'format_study_program.R' script. The course features were relatively clean already and did not need additional cleaning. This was also the case for the 'gender', 'chocolate makes you' and 'give a random number' features. The original 'birthday' feature was cleaned using the 'clean_birthday_bedtime.py' script and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned with the 'GoodDay_cleanup.R' script using exact string matching and the levenstein distance coefficient.
+## Basic classification/regression
 
-## Exploratory data analysis
-The cleaned data consisted of 218 samples and 14 features.
+In this task we decided to focus on classification models.
+For experiments we will use *train* dataset from Kaggle's Titanic competition to have a better insight and background for Task 2. This dataset contains attributes like Survived, Name, Sex, Age, Ticket, Fare, Cabin and Embarked. We decided to use Survived attribute as a dependent value snice it indicates if passenger survived the sinking, which is quite interesting for prediction performance.
 
-More men participate in the data mining techniques course:
-```{r, echo=FALSE, fig.align='center'}
-pie(table(data$What.is.your.gender.), col = rainbow(3), labels = c("Unknown: 4","Females: 63","Males: 150"))
-```
-\
-Figure 1. Pie chart showing the gender distribution in the data mining techniques course.\
-\
+Basic classification was performed in RapidMiner using Cross Validation module.
+For each experiment we will use the same setup.
+Cross Validation was based on 10 folds and automatic sampling type.
+Inside Cross Validation module we have two spaces to manage: training and testiong.
+In training spae we placed classification model while in testing space we applied model with Performance analysis.
 
-The birth years distribution (left out two students who were born in 1768 and 1931):
-```{r, echo=FALSE, fig.align='center'}
-plot(table(data$birth_year), xlab = "Year", ylab = "Number of students", xlim = c(1981,2000))
-```
-\
+### Classification model: Decision Tree
+For the first experiment we used Decision Tree model. We set parameters as follows: confidence = 0.25, minimal gain = 0.1.
+Thanks to Performance module in Testing space we have a good insight into results of classification.
+For such a setup we obtained following results: accuracy = 79,57%, precision = 77,04%, recall = 67,28%.
 
-Figure 2. Birth year distribution in the data mining techniques course.\
-\
+### Classification model: KNN
+For the second experiment we used KNN (k-Nearest Neighbors) model. Parameters were set as follows: k = 1, measure types = MixedMEasures, mixed measure = MixedEuclideanDistance.
+As a result of experiment we obtained: accuracy = 69,81%, precision = 59,78%, recall = 63,76%.
 
-A short description of the answers of the 'Chocolate makes you....' question. First, the data is converted in a frequency table using the `table` function. Then the `names` are redefined to define shorter class names. Finally, the data is plotted in figure 2.
-```{r, echo=FALSE, fig.align='center'}
-choc = table(data$Chocolate.makes.you.....)
-names(choc) = c("NA", "fat", "No idea", "Neither", "slim", "unknown")
-barplot(choc)
-```
-\
+We can see that for this task Decision Tree model performed better in every aspect. KNN model usually performes better with numerics, while Decision Tree is good with both numerics and nominals. Decision Trees also deal with noisy or incomplete data.
 
-Figure 3. Chocolate makes you.... Answer frequencies.
-
-# Basic classification/regression
-A simple reression using gender as dependent variable and the 'chocolate makes you...' as independent variable:
-```{r, warning=FALSE, message=FALSE}
-library(boot)
-glm = glm(data$What.is.your.gender.~data$Chocolate.makes.you....., family = 'binomial')
-summary(glm)
-# cross validation:
-cv.glm(data[,c(6,7)],glm)
-```
-
-There seems to be no clear relationship between the answer type and the gender.
+# Task 2: Compete in a Kaggle Competition to Predict Titanic Survival
 
 ```{r, echo=FALSE}
 library(knitr)
@@ -72,8 +41,6 @@ test <- read.csv("test.csv")
 test$Survived <- NA
 data <- rbind(train, test)
 ```
-
-# Task 2: Compete in a Kaggle Competition to Predict Titanic Survival
 
 The aim of the competition is to predict who among the passengers and crew was more likely to survive than others. Kaggle provides two datasets: *train* and *test*. While both datasets reference to passengers details, only *train* dataset contains infromation if passenger survived or not. Our goal is to predict which passenger from *test* dataset survived the sinking of Titanic.
 
@@ -264,7 +231,6 @@ The pre-processing step consisted of resizing the satelite images, removing haze
 \
 The main reasons why this model won the competition was the creation of an ensemble model. As different models had different capabilities on each class label, the combination of the models resulted in a higher accuracy.
 \
-![**Figure 1.** Modeling workflow with pre-processing (left), model training (center)\ and predicting (right).](amazon_models.png)
 
 
 # Task 3.B – Theory: MSE verse MAE
