@@ -8,7 +8,7 @@ odi_data
 
 attach(odi_data)
 
-
+pie(table(What.is.your.gender.))
 
 barplot(table(What.programme.are.you.in.), main="Program of Study",
         xlab="Program of Study",
@@ -22,6 +22,7 @@ barplot(table(What.programme.are.you.in.), main="Program of Study",
 # Total number of records : 218 
 # Real record : 217. 1st record : empty (maybe for header!)
 # Total number of attributes: 16
+
 # More male(150) students are taking this course compared to female(63)
 # Gender unknown : 4  
 
