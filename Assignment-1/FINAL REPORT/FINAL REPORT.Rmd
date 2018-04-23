@@ -9,7 +9,84 @@ highlight: tango
 
 # Task 1: Explore a small dataset
 
-## Basic classification/regression
+```{r, echo=FALSE, warning=FALSE,results='hide',message=FALSE, include=FALSE}
+odi_data <- read.csv("ODI-2018_clean.csv")
+odi_data
+
+odi_data <- odi_data[-c (1),]
+odi_data
+
+attach(odi_data)
+options(digits = 3) #Showing only 3 decimals
+```
+## Data Collection, Cleaning and Exploration
+
+The dataset: *ODI-2018.csv* contained students response that has been gathered during the first lecture of this course. 
+Our findings about the records of the raw data is given below:
+* Total number of records : 218 
+* Real record : 217
+* 1st record : empty (maybe for header!)
+* Total number of attributes: 16
+* The attributes related to Gender, Machine Learning course, Information Retrieval course, Database course, Statistics course and Chocolates are categorial types.
+* The study program is string type attribute, good day
+
+The study program feature was cleaned using the since there are numerous input for same study program. The original 'birthday' feature was cleaned and splitted into a day, month and year feature. Unfortunately, the 'bedtime' feature cleaning was problematic and was manually formatted. Finally, the 'good day' features were cleaned using exact string matching and the levenstein distance coefficient. We removed some columns that we found not much interesting to analyse. 
+
+After finishing data cleaning we generated our clean dataset : *ODI-2018_clean.csv* which we are going to use for further data exploration.
+
+## Various Plots for Dataset
+
+We generated the barplot to identify some interesting facts about study program. Looking at the barplot we can say that such a diverse group of students are taking the data mining course(26 different program). Among them, maximum number of students(48) are from Artifitial Intelligence background. We found one invalid entry for this attribute(i.e 12-05-1995).
+
+```{r echo=FALSE, out.width='70%', fig.align='center'}
+knitr::include_graphics('program.PNG')
+```
+
+### Have you taken Machine Learning ###
+
+We wanted to check the how many students have taken Machine Learning course prior to take this course. For this we plotted a barplot with the Machine learning course attribute. If we look into the barplot we see that highest frequency = yes that is, approximately 0.6. And in total 120 students have taken Machine learning while on the other hand 94 students didn't take it and 3 answers are unknown. 
+
+```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
+ml = as.factor(Have.you.taken.a.course.on.machine.learning.)
+barplot(prop.table(table(ml)),  main="Barplot for Prior knowledge of Machine Learning",
+        xlab= "Response of students",
+        ylab="Frequency",
+        col="lightblue",
+        ylim = c(0, 0.8))
+# Taken Machine Learning : yes = 120, No = 94, Unknown = 3
+# Highest frequency = Yes (~0.6)
+```
+### Birth Year ###
+
+Observing the above histogram of Student's birth year we figured out some ranges. For instance majority of students have birth year within (1950 - 2000).
+There are also three ranges that was valid but cannot be possible as birth year for a masters students. Those ranges are *(1750-1800) = 1 student, (1900-1950) = 1 student, (2000-2050) = 3 students*. Maximum students gave *NA*(53) answer for this particular question. There are also some interesting entries for birth year i.e. 1768, 1931, 2000, 2018. 
+
+```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
+byr = as.numeric(birth_year)
+hist(byr, main="Histogram of Student's Birth Year",
+     xlab="Birth Year",
+     ylab="Number of Student",
+     col="lightblue",
+     ylim = c(0,200))
+# Birth Year : Na = 53(max), some interesting input = 1768, 1931, 2000, 2018
+# majority of student have birthyear = (1950 - 2000)
+# (1750-1800) = 1 student, (1900-1950) = 1, (2000-2050) = 3
+
+```
+
+### QQ-Plot of given random number between 0 to 100
+```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
+qqnorm(as.numeric(Give.a.random.number), main = "Normal Q-Q Plot of Random number")
+qqline(as.numeric(Give.a.random.number), col = 'red')
+
+```
+
+The QQ-Plot doesn't seem normal rather it seems like stepped!
+We could see the highest frequency = 7 from the barplot.
+Although maximun limit was 100 but there are some strange/invalid input for example : *rnorm(n=1,mu=12,sigma=1)*
+
+
+## 1.B. - Basic classification/regression
 
 In this task we decided to focus on classification models.
 For experiments we will use *train* dataset from Kaggle's Titanic competition to have a better insight and background for Task 2. This dataset contains attributes like Survived, Name, Sex, Age, Ticket, Fare, Cabin and Embarked. We decided to use Survived attribute as a dependent value snice it indicates if passenger survived the sinking, which is quite interesting for prediction performance.
@@ -17,8 +94,8 @@ For experiments we will use *train* dataset from Kaggle's Titanic competition to
 Basic classification was performed in RapidMiner using Cross Validation module.
 For each experiment we will use the same setup.
 Cross Validation was based on 10 folds and automatic sampling type.
-Inside Cross Validation module we have two spaces to manage: training and testiong.
-In training spae we placed classification model while in testing space we applied model with Performance analysis.
+Inside Cross Validation module we have two spaces to manage: training and testing.
+In training space we placed classification model while in testing space we applied model with Performance analysis.
 
 ### Classification model: Decision Tree
 For the first experiment we used Decision Tree model. We set parameters as follows: confidence = 0.25, minimal gain = 0.1.
@@ -275,11 +352,11 @@ To calculate MSE and MAE of different regression methods we used the *Energy_eff
 
 The dataset contains the following eight attributes or features(X1,X2,....X8) along with two response variables(Y1,Y2):
 
-$-$	Relative Compactness(X1) $-$ Surface Area(X2) 
-$-$ Wall Area(X3) $-$ Roof Area(X4) 
-$-$ Overall Height(X5) $-$ Orientation(X6) 
-$-$ Glazing Area(X7) $-$ Glazing Area Distribution(X8)
-$-$ Heating Load(Y1) $-$ Cooling Load(Y2)
+-	Relative Compactness(X1) - Surface Area(X2) 
+- Wall Area(X3) - Roof Area(X4) 
+- Overall Height(X5) - Orientation(X6) 
+- Glazing Area(X7) - Glazing Area Distribution(X8)
+- Heating Load(Y1) - Cooling Load(Y2)
 
 It is important to implement energy efficiency in building to mitigate the impact of climate change. Due to the high demand for energy and unsustainable supplies, energy efficiency in building plays a vital role reducing energy costs and greenhouse gas emissions. Therefore, studying this dataset to evaluate how well energy is being used there to cut out the costs which will be helpful to have a ECO-friendly environment.
 
