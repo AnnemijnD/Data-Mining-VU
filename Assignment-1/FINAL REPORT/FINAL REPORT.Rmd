@@ -34,21 +34,21 @@ The study program feature was cleaned using the since there are numerous input f
 
 After finishing data cleaning we generated our clean dataset : *ODI-2018_clean.csv* which we are going to use for further data exploration.
 
-## Various Plots for Dataset
-
-We generated the barplot to identify some interesting facts about study program. Looking at the barplot we can say that such a diverse group of students are taking the data mining course(26 different program). Among them, maximum number of students(48) are from Artifitial Intelligence background. We found one invalid entry for this attribute(i.e 12-05-1995).
+## Study programs
 
 ```{r echo=FALSE, out.width='70%', fig.align='center'}
 knitr::include_graphics('program.PNG')
 ```
 
+We generated the barplot to identify some interesting facts about study program. Looking at the barplot we can say that such a diverse group of students are taking the data mining course(26 different program). Among them, maximum number of students(48) are from Artifitial Intelligence background. We found one invalid entry for this attribute(i.e 12-05-1995).
+
 ### Have you taken Machine Learning ###
 
 We wanted to check the how many students have taken Machine Learning course prior to take this course. For this we plotted a barplot with the Machine learning course attribute. If we look into the barplot we see that highest frequency = yes that is, approximately 0.6. And in total 120 students have taken Machine learning while on the other hand 94 students didn't take it and 3 answers are unknown. 
 
-```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
+```{r, echo=FALSE,fig.height=3, fig.width=4.5, fig.align='center',fig.show='hold'}
 ml = as.factor(Have.you.taken.a.course.on.machine.learning.)
-barplot(prop.table(table(ml)),  main="Barplot for Prior knowledge of Machine Learning",
+barplot(prop.table(table(ml)),  main="Prior knowledge of Machine Learning",
         xlab= "Response of students",
         ylab="Frequency",
         col="lightblue",
@@ -56,34 +56,17 @@ barplot(prop.table(table(ml)),  main="Barplot for Prior knowledge of Machine Lea
 # Taken Machine Learning : yes = 120, No = 94, Unknown = 3
 # Highest frequency = Yes (~0.6)
 ```
-### Birth Year ###
 
-Observing the above histogram of Student's birth year we figured out some ranges. For instance majority of students have birth year within (1950 - 2000).
-There are also three ranges that was valid but cannot be possible as birth year for a masters students. Those ranges are *(1750-1800) = 1 student, (1900-1950) = 1 student, (2000-2050) = 3 students*. Maximum students gave *NA*(53) answer for this particular question. There are also some interesting entries for birth year i.e. 1768, 1931, 2000, 2018. 
 
-```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
-byr = as.numeric(birth_year)
-hist(byr, main="Histogram of Student's Birth Year",
-     xlab="Birth Year",
-     ylab="Number of Student",
-     col="lightblue",
-     ylim = c(0,200))
-# Birth Year : Na = 53(max), some interesting input = 1768, 1931, 2000, 2018
-# majority of student have birthyear = (1950 - 2000)
-# (1750-1800) = 1 student, (1900-1950) = 1, (2000-2050) = 3
-
-```
-
-### QQ-Plot of given random number between 0 to 100
+### QQ-Plot of Random Number
 ```{r, echo=FALSE,fig.height=4, fig.width=4.5, fig.align='center',fig.show='hold'}
 qqnorm(as.numeric(Give.a.random.number), main = "Normal Q-Q Plot of Random number")
 qqline(as.numeric(Give.a.random.number), col = 'red')
 
 ```
 
-The QQ-Plot doesn't seem normal rather it seems like stepped!
-We could see the highest frequency = 7 from the barplot.
-Although maximun limit was 100 but there are some strange/invalid input for example : *rnorm(n=1,mu=12,sigma=1)*
+In question about Random Number we expected to see normal distribution.
+We can see that the highest frequency occurs for value 7. Unfortunately, although value range was fixed, the dataset contains a lot of outliers.
 
 
 ## 1.B. - Basic classification/regression
