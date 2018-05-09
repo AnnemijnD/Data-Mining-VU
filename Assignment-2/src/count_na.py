@@ -16,6 +16,7 @@ import pandas as pd
 from collections import OrderedDict
 
 ## read the training data
+print("Loading data...")
 data = pd.read_csv('../data/train.csv')
 
 print("Loaded %s features" % str(len(data.columns)))
