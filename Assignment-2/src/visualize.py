@@ -30,7 +30,6 @@ print("Loaded %s features and %s samples" % (str(len(data.columns)),str(len(data
 #print(data.ix[:,1].describe(include='numpy.number'))
 #print(data['orig_destination_distance'].describe(include='numpy.number'))
 
-'''
 ## save a histogram of the prices
 data['price_usd'].plot.hist(bins=100,range=(0,800))
 plt.xlabel('Booking price (USD)', fontsize=8)
@@ -64,7 +63,6 @@ plt.ylabel('Frequency',fontsize=8)
 plt.grid(True)
 plt.savefig('../results/hist_orig_destination_distance.png', dpi=600)
 plt.clf()
-'''
 
 ## calculate the correlation matrix and build a heatmap
 corr = data.ix[:,[5,6,9,10,12,13,14,16,19,20,21,22,23,24,25,26]].corr()
