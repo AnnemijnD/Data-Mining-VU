@@ -1,5 +1,18 @@
 data_raw = read.csv('sample_train_10prc_no_missing_val.csv')
 
+
+# Feature Engineering: DateTime
+data_raw$date_time <- as.character(data_raw$date_time)
+data_raw$date_day <- sapply(data_raw$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][3]})
+data_raw$date_month <- sapply(data_raw$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][2]})
+data_raw$date_hour <- sapply(data_raw$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][4]})
+data_raw$date_day <- factor(make.names(data_raw$date_day))
+data_raw$date_month <- factor(make.names(data_raw$date_month))
+data_raw$date_hour <- factor(make.names(data_raw$date_hour))
+
+# Feature Engineering: 
+
+# Prepare factors
 data_raw$site_id <- factor(make.names(data_raw$site_id))
 #data_raw$visitor_location_country_id <- factor(make.names(data_raw$visitor_location_country_id))
 #data_raw$prop_country_id <- factor(make.names(data_raw$prop_country_id))
@@ -32,7 +45,7 @@ data_raw$comp8_inv <- factor(make.names(data_raw$comp8_inv))
 data_raw$click_bool <- factor(make.names(data_raw$click_bool))
 data_raw$booking_bool <- factor(make.names(data_raw$booking_bool))
 
-data = data_raw[1:10000,]
+data = data_raw[1:100000,]
 
 library('caret')
 set.seed(1)
@@ -50,7 +63,39 @@ fitControl <- trainControl(
   classProbs = T,
   verboseIter = TRUE)
 
-predictors <- c("prop_location_score2","date_time","srch_destination_id","price_usd","srch_booking_window","prop_log_historical_price","site_id")
+predictors <- c("date_day",
+                "date_month",
+                "date_hour",
+                "prop_location_score2",
+                "srch_destination_id",
+                "price_usd",
+                "srch_booking_window",
+                "prop_log_historical_price",
+                "site_id",
+                "comp1_rate",
+                "comp1_inv",
+                "comp1_rate_percent_diff",
+                "comp2_rate",
+                "comp2_inv",
+                "comp2_rate_percent_diff",
+                "comp3_rate",
+                "comp3_inv",
+                "comp3_rate_percent_diff",
+                "comp4_rate",
+                "comp4_inv",
+                "comp4_rate_percent_diff",
+                "comp5_rate",
+                "comp5_inv",
+                "comp5_rate_percent_diff",
+                "comp6_rate",
+                "comp6_inv",
+                "comp6_rate_percent_diff",
+                "comp7_rate",
+                "comp7_inv",
+                "comp7_rate_percent_diff",
+                "comp8_rate",
+                "comp8_inv",
+                "comp8_rate_percent_diff")
 outcomeName <- 'booking_bool'
 
 model_rf<-train(trainSet[,predictors],trainSet[,outcomeName],method='rf',trControl=fitControl,tuneLength=3)
@@ -60,7 +105,3 @@ plot(importance)
 
 testSet$pred_rf<-predict(object = model_rf,testSet[,predictors])
 confusionMatrix(testSet$booking_bool,testSet$pred_rf)
-
-
-library('FSelector')
-res <- gain.ratio(g~., data)
