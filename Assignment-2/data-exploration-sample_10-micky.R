@@ -43,6 +43,7 @@ data_sample[49] = as.data.frame(lapply(data_sample[31], function(x) ifelse(is.na
 # filling up missing values with -1 for rest of the other attributes
 # data_sample[1:27] = as.data.frame(lapply(data_sample[1:27], function(x) ifelse(is.na(x), -1, x)))
 data_sample[5:6] = as.data.frame(lapply(data_sample[5:6], function(x) ifelse(is.na(x), -1, x)))
+data_sample[10] = as.data.frame(lapply(data_sample[10], function(x) ifelse(is.na(x), -1, x)))
 data_sample[13] = as.data.frame(lapply(data_sample[13], function(x) ifelse(is.na(x), -1, x)))
 data_sample[25:26] = as.data.frame(lapply(data_sample[25:26], function(x) ifelse(is.na(x), -1, x)))
 data_sample[29:30] = as.data.frame(lapply(data_sample[29:30], function(x) ifelse(is.na(x), -1, x)))
