@@ -34,7 +34,7 @@ energy_efficiency$Orientation = as.factor(energy_efficiency$Orientation)
 energy_efficiency$Glazing.Area = as.factor(energy_efficiency$Glazing.Area)
 energy_efficiency$Glazing.Area.Distribution = as.factor(energy_efficiency$Glazing.Area.Distribution)
 
-require(dplyr)
+
 energy_efficiency_lm = lm(Heating.Load ~ Relative.Compactness + Surface.Area + Wall.Area + Roof.Area + Overall.Height + Orientation + Glazing.Area + Glazing.Area.Distribution, data = energy_efficiency)
 alias(energy_efficiency_lm)
 summary(energy_efficiency_lm)$coefficients
