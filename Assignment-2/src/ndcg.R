@@ -23,10 +23,13 @@ snDCG <- function (data){
 		rel <- data[i,3] + 4*data[i,4]
 		sum <- sum + (2^rel-1)/(log(i+1)/log(2))
 	}
+	if (maxDCG(nrow(data), sum(data[,4]), sum(data[,3]))==0){
+	  return(0)
+	}
 	sum <- sum/maxDCG(nrow(data), sum(data[,4]), sum(data[,3]))
 	return(sum)
 }
-nDCG <- function (data){
+nDCG <- function (data, debug=FALSE){
 	start <- 1
 	dcgv <- NULL
 	for(i in 2:nrow(data)){
@@ -35,6 +38,8 @@ nDCG <- function (data){
 			start <- i
 		}
 	}
-	x = mean(na.omit(dcgv))
-	return(x)
+	if (debug==TRUE){
+	  return(dcgv)
+	}
+	return(mean(dcgv))
 }
