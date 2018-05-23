@@ -1,3 +1,10 @@
+############################
+#
+# Author : Tanjina Islam
+# Creation Date : 16th May, 2018
+#
+############################
+
 library(caret)
 library(gbm)
 library(multcomp)
@@ -7,35 +14,54 @@ library(Metrics) # For MSE and MAE
 
 require(gbm)
 require(dplyr)
+# library for parellel processing
+library(doParallel)
+
+# To create a local 4-node snow cluster
+
+num_of_cluster <- makeCluster(detectCores(), type = "SOCK")
+registerDoParallel(num_of_cluster)  # For linux/mac use library(doMC) and registerDoMC(cores = 4)
+
+# Print process Ids
+
+foreach(i=1:length(num_of_cluster)) %dopar% Sys.getpid()
 
 data_sample = read.csv("sample_train_10prc_no_missing_val.csv")
 
 attach(data_sample)
 # data_sample
 
-data_sample$booking_bool <- as.factor(data_sample$booking_bool)
-
 # Feature Engineering: DateTime
 data_sample$date_time <- as.character(data_sample$date_time)
 data_sample$date_day <- sapply(data_sample$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][3]})
 data_sample$date_month <- sapply(data_sample$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][2]})
 data_sample$date_hour <- sapply(data_sample$date_time, FUN=function(x) {strsplit(x, split='[- :]')[[1]][4]})
-data_sample$date_day <- factor(make.names(data_sample$date_day))
-data_sample$date_month <- factor(make.names(data_sample$date_month))
-data_sample$date_hour <- factor(make.names(data_sample$date_hour))
+data_sample$date_day <- as.factor(data_sample$date_day)
+data_sample$date_month <- as.factor(data_sample$date_month)
+data_sample$date_hour <- as.factor(data_sample$date_hour)
 
 
 # Feature Engineering: price_diff_usd = | visitor_hist_adr_usd - price_usd |
 
 data_sample["price_diff_usd"] <- abs(visitor_hist_adr_usd - price_usd)
-#data_sample$price_diff_usd <- factor(make.names(data_sample$price_diff_usd))
+# data_sample$price_diff_usd <- factor(make.names(data_sample$price_diff_usd))
 
 # Feature Engineering: star_rating_diff = | visitor_hist_adr_usd - price_usd |
 data_sample["star_rating_diff"] <- abs(visitor_hist_starrating - prop_starrating)
-
+# data_sample$star_rating_diff <- factor(make.names(data_sample$star_rating_diff))
 
 # Feature Engineering: prop_star_rating_monotonic = | prop_starrating - mean(prop_starrating[booking_bool]) |
 data_sample["prop_star_rating_monotonic"] <- abs(prop_starrating - mean(prop_starrating[booking_bool]))
+# data_sample$prop_star_rating_monotonic <- factor(make.names(data_sample$prop_star_rating_monotonic))
+
+# data_sample
+
+
+# Remove the redundant column "X"
+data_sample <- data_sample[-c(1,3)] 
+
+# Write CSV in R
+write.csv(data_sample, file = "sample_train_10prc_data_processed.csv") 
 
 
 ## Generating training and testing datasets ##
@@ -57,7 +83,7 @@ gbm2 <- gbm(booking_bool ~ price_diff_usd + date_day + date_month + date_hour + 
               comp5_rate + comp5_inv + comp5_rate_percent_diff +
               comp6_rate + comp6_inv + comp6_rate_percent_diff +
               comp7_rate + comp7_inv + comp7_rate_percent_diff +
-              comp8_rate + comp8_inv + comp8_rate_percent_diff, data = train_data, n.trees = 1000)
+              comp8_rate + comp8_inv + comp8_rate_percent_diff, data = train_data, n.trees = 1000, shrinkage = 0.01, interaction.depth = 4)
 gbm2_pred <- predict(gbm2, test_data, n.trees = 1000) 
 
 summary(gbm2,
@@ -70,11 +96,6 @@ summary(gbm2,
 
 actuals_preds <- data.frame(cbind(actuals = test_data$booking_bool, predicteds = gbm2_pred))  # actuals_predicteds dataframe for Cooling.Load
 actuals_preds
-
-# Using the importance()  function to calculate the importance of each variable
-imp <- as.data.frame(sort(importance(gbm2)[,1],decreasing = TRUE),optional = T)
-names(imp) <- "% Inc MSE"
-imp
 
 ## Calculate MSE ##
 
