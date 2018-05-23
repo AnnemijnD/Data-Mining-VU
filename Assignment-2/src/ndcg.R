@@ -26,7 +26,7 @@ snDCG <- function (data){
 	sum <- sum/maxDCG(nrow(data), sum(data[,4]), sum(data[,3]))
 	return(sum)
 }
-nDCG <- function (data){
+nDCG <- function (data, debug=FALSE){
 	start <- 1
 	dcgv <- NULL
 	for(i in 2:nrow(data)){
@@ -35,6 +35,11 @@ nDCG <- function (data){
 			start <- i
 		}
 	}
+
+	dcgv[is.na(dcgv)] = 0
 	x = mean(na.omit(dcgv))
+	if (debug==TRUE){
+	  return(dcgv)
+	}
 	return(x)
 }
