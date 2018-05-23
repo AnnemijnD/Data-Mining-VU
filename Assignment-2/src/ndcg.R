@@ -1,5 +1,6 @@
-## input data format
-# single srch id, propid, click, book
+## input (sorted based on booking and clicking probability per srch_id) data frame
+## data frame in this column order:
+# single srch id, prop_id, click_bool, booking_bool
 maxDCG <- function (k, nbook, nclick){
 	sum <-0
 	for(i in 1:k){
