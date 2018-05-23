@@ -28,3 +28,10 @@ data["star_rating_diff"] <- abs(visitor_hist_starrating - prop_starrating)
 
 # 05 : prop_star_rating_monotonic = | prop_starrating - mean(prop_starrating[booking_bool]) |
 data["prop_star_rating_monotonic"] <- abs(prop_starrating - mean(prop_starrating[booking_bool]))
+
+# 06 : hotel rank in region
+data$srch_destination_id <- factor(data$srch_destination_id)
+
+
+# Write CSV in R
+write.csv(data_sample, file = "sample_train_10prc_feature_eng.csv")
