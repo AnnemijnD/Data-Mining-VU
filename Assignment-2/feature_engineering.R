@@ -56,8 +56,9 @@ data["score2ma"] = prop_location_score2 * srch_query_affinity_score
 # 13 :
 data["score1d2"] = (prop_location_score2 + 0.0001)/(prop_location_score1 + 0.0001)
 
-
-
+# 14 : modelled position
+load("position_model_feature")
+data["position_model"] = position_model
 
 # Write CSV in R
 write.csv(data, file = "sample_train_10prc_feature_eng.csv")
