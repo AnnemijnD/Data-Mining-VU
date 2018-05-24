@@ -5,6 +5,10 @@
 # data: complete test dataframe
 # features: vector with indices (column numbers of the used features in the test data)
 #
+# Example:
+# source("src/run_ndcg.R")
+# result1 = run_ndcg(gbm,test,c(67,58,15,9,11,26))
+#
 ######################################################################################
 
 source("src/ndcg.R")
