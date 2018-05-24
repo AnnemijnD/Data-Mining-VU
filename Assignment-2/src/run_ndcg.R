@@ -19,10 +19,10 @@ run_ndcg = function(model,data,features,ignore_null=F,debug=F){
           data$prop_id,
           data$click_bool,
           data$booking_bool,
-          predict(model,data[,features], type = "prob"))
-  x=x[,c(-5)]
-  x = x[order(x$`data$srch_id`,x$X1, decreasing = T),]
+          predict(model,data[,features], type = "response"))
   colnames(x) = c("srch_id", "prop_id", "click_bool","booking_bool", "booking_prob")
+  x = as.data.frame(x)
+  x = x[order(x$srch_id,x$booking_prob, decreasing = T),]
   result=nDCG(x, ignore_null,debug)
   result
 }
