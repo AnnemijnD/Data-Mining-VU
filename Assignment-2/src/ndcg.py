@@ -44,4 +44,5 @@ def ndcg(data, zeromax=math.nan):
 
     return(np.nanmean(score))
 
-print(ndcg(prediction), end="\r")
+result = ndcg(prediction)
+print("\n\nnDCG: %s" % result)
