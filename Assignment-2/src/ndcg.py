@@ -3,7 +3,10 @@ import numpy as np
 import math
 import sys
 
-def ndcg(data, inf=math.nan):
+path = sys.argv[1]
+prediction = pd.read_csv(path)
+
+def ndcg(data, zeromax=math.nan):
     score = []
     qcount = 1
     queries = data['srch_id'].nunique()
@@ -22,7 +25,7 @@ def ndcg(data, inf=math.nan):
             irel = np.asscalar(irel)
             idcg += (2**irel-1)/math.log2(i+1)
 
-        query = query.sort_values(['prediction'], ascending=[False])
+        query = query.sort_values(['prediction_book', 'prediction_click'], ascending=[False, False])
         query['rel'] = query['booking_bool']*4 + query['click_bool']
 
         i = 0
@@ -32,9 +35,13 @@ def ndcg(data, inf=math.nan):
             dcg += (2**rel-1)/math.log2(i+1)
 
         if idcg == 0:
-            ndcg = inf
+            ndcg = zeromax
         else:
             ndcg = dcg/idcg
 
         qcount += 1
+        score.append(ndcg)
+
     return(np.nanmean(score))
+
+print(ndcg(prediction))
