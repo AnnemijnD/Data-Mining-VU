@@ -1,5 +1,5 @@
 #load data
-data = read.csv('sample_train_10prc_no_missing_val.csv')
+data = read.csv('sample_train_10prc_by_srch_id_no_missing_val.csv')
 attach(data)
 
 data <- data[-c(1)]
@@ -62,5 +62,5 @@ data["score1d2"] = (prop_location_score2 + 0.0001)/(prop_location_score1 + 0.000
 
 # Write CSV in R
 write.csv(data, file = "feature_eng_result.csv")
-#data_new = read.csv("test_feature_eng.csv")
+#data_new = read.csv("feature_eng_result.csv")
 #data_new
