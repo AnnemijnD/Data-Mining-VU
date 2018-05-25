@@ -1,5 +1,5 @@
 #load data
-data = read.csv('data_sample/sample_train_10prc_no_missing_val.csv')
+data = read.csv('sample_train_10prc_no_missing_val.csv')
 attach(data)
 
 data <- data[-c(1)]
@@ -57,10 +57,10 @@ data["score2ma"] = prop_location_score2 * srch_query_affinity_score
 data["score1d2"] = (prop_location_score2 + 0.0001)/(prop_location_score1 + 0.0001)
 
 # 14 : modelled position
-load("position_model_feature")
-data["position_model"] = position_model
+#load("position_model_feature")
+#data["position_model"] = position_model
 
 # Write CSV in R
-write.csv(data, file = "sample_train_10prc_feature_eng.csv")
-data_new = read.csv("sample_train_10prc_feature_eng.csv")
-data_new
+write.csv(data, file = "feature_eng_result.csv")
+#data_new = read.csv("test_feature_eng.csv")
+#data_new
