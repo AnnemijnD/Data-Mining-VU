@@ -57,8 +57,8 @@ data["score2ma"] = prop_location_score2 * srch_query_affinity_score
 data["score1d2"] = (prop_location_score2 + 0.0001)/(prop_location_score1 + 0.0001)
 
 # 14 : modelled position
-#load("position_model_feature")
-#data["position_model"] = position_model
+load("src/position_feature")
+data["position_model"] = position_model
 
 # Write CSV in R
 write.csv(data, file = "feature_eng_result.csv")
