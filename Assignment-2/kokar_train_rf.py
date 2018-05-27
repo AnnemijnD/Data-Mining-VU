@@ -13,6 +13,7 @@ pd.options.mode.chained_assignment = None
 
 # Load numpy
 import numpy as np
+import pickle
 
 # Set random seed
 np.random.seed(0)
@@ -36,6 +37,10 @@ clf = RandomForestClassifier(n_estimators=100, n_jobs=2, random_state=0, verbose
 # Train the Classifier to take the training features and learn how they relate
 clf.fit(train[features], y)
 
+# save the model
+filename = 'rf_click.sav'
+pickle.dump(clf, open(filename, 'wb'))
+
 # Create predicted_clicks column for test dataset
 test["prediction_click"] = clf.predict_proba(test[features])[:, 1]
 
@@ -56,6 +61,10 @@ clf = RandomForestClassifier(n_estimators=100, n_jobs=2, random_state=0, verbose
 
 # Train the Classifier to take the training features and learn how they relate
 clf.fit(train[features], y)
+
+# save the model
+filename = 'rf_book.sav'
+pickle.dump(clf, open(filename, 'wb'))
 
 # Create predicted_clicks column for test dataset
 test["prediction_book"] = clf.predict_proba(test[features])[:, 1]
