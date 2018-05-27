@@ -37,10 +37,10 @@ clf = RandomForestClassifier(n_estimators=100, n_jobs=2, random_state=0, verbose
 clf.fit(train[features], y)
 
 # Create predicted_clicks column for test dataset
-test["prediction_click"] = clf.predict(test[features])
+test["prediction_click"] = clf.predict_proba(test[features])[:, 1]
 
 # Create predicted_clicks column for train dataset
-train["prediction_click"] = clf.predict(train[features])
+train["prediction_click"] = clf.predict_proba(train[features])[:, 1]
 
 # AFTER PREDICTING  CLICK_BOOL, NOW WE CAN TRY TO PREDICT BOOKING_BOOL
 
@@ -58,12 +58,15 @@ clf = RandomForestClassifier(n_estimators=100, n_jobs=2, random_state=0, verbose
 clf.fit(train[features], y)
 
 # Create predicted_clicks column for test dataset
-test["prediction_book"] = clf.predict(test[features])
+test["prediction_book"] = clf.predict_proba(test[features])[:, 1]
 
-print("Kappa : %.4g" % metrics.cohen_kappa_score(test["booking_bool"].values, test["prediction_book"]))
+# generate binary predictions for kappa:
+test_predictions_binary = clf.predict(test[features])
+
+print("Kappa : %.4g" % metrics.cohen_kappa_score(test["booking_bool"].values, test_predictions_binary))
 
 file = open('rf_book_kappa.txt', 'w')
-file.write(str(metrics.cohen_kappa_score(test["booking_bool"].values, test["prediction_book"])))
+file.write(str(metrics.cohen_kappa_score(test["booking_bool"].values, test_predictions_binary)))
 file.close()
 
 test.to_csv("python_rf_result.csv")
