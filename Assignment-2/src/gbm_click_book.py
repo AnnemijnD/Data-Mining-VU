@@ -14,7 +14,7 @@ from matplotlib.pylab import rcParams
 rcParams['figure.figsize'] = 12, 4
 
 train = pd.read_csv('../feature_eng_result.csv')
-#train = train[:-490000]
+train = train[:-490000]
 
 def modelfit(model, train, predictors, response, prediction, CV=True, printFeatureImportance=True, cv_folds=5):
     # Fit the algorithm on the data
@@ -36,6 +36,9 @@ def modelfit(model, train, predictors, response, prediction, CV=True, printFeatu
     print("\nModel Report")
     print("Kappa : %.4g" % metrics.cohen_kappa_score(train[response].values, dtrain_predictions))
     #print("AUC Score (Train): %f" % metrics.roc_auc_score(train['click_bool'], dtrain_predprob))
+    file = open('gbm_book_kappa.txt', 'w')
+    file.write(str(metrics.cohen_kappa_score(train[response].values, dtrain_predictions)))
+    file.close()
 
     if CV:
         print("CV Score : Mean - %.7g | Std - %.7g | Min - %.7g | Max - %.7g" % (
@@ -94,6 +97,7 @@ predictors.remove('gross_bookings_usd')
 predictors.remove('position')
 predictors.remove('Unnamed: 0')
 predictors.remove('date_time')
+predictors.remove('Unnamed: 0.1')
 
 gbm1 = GradientBoostingClassifier(random_state=10, verbose=1, n_estimators=1000)
 
