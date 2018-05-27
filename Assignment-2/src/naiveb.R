@@ -42,7 +42,6 @@ data$date_day <- factor(make.names(data$date_day))
 data$date_month <- factor(make.names(data$date_month))
 data$date_hour <- factor(make.names(data$date_hour))
 data$children_flag <- factor(make.names(data$children_flag))
-data$prop_star_rating_monotonic <- factor(make.names(data$prop_star_rating_monotonic))
 
 
 ## Generating training and testing datasets ##
@@ -58,7 +57,7 @@ test_data  <- data[-train_index, ]   # test data
 
 # model click_bool
 library(doMC)
-registerDoMC(cores = 3)
+registerDoMC(cores = 7)
 
 nb_model_click = train(train_data[,-c(14,51,52,53)],
                        make.names(factor(train_data[,51])),
@@ -67,12 +66,12 @@ nb_model_click = train(train_data[,-c(14,51,52,53)],
 
 saveRDS(nb_model_click, file = "Assignment-2/nb_model_click.rds")
 
-model_pred_click <- predict(nb_model_click, test_data[,-c(14,51,52,53)], type = "prob")
+model_pred_click <- predict(nb_model_click, train_data[,-c(14,51,52,53)], type = "prob")
 
-train_data$prediction_click = model_pred_click
+train_data$prediction_click = model_pred_click$X1
 
 # model book_bool
-registerDoMC(cores = 3)
+registerDoMC(cores = 7)
 
 nb_model_book = train(train_data[,-c(14,51,52,53)],
                       make.names(factor(train_data[,53])),
@@ -81,10 +80,27 @@ nb_model_book = train(train_data[,-c(14,51,52,53)],
 
 saveRDS(nb_model_book, file = "Assignment-2/nb_model_book.rds")
 
-model_pred_book <- predict(nb_model_book, test_data[,-c(14,51,52,53)], type = "prob")
+model_pred_book <- predict(nb_model_book, train_data[,-c(14,51,52,53)], type = "prob")
 
-train_data$prediction_book = model_pred_book
+train_data$prediction_book = model_pred_book$X1
+write.csv(train_data,"Assignment-2/nb_model_book_result.csv")
 
+x=cbind(train_data$srch_id,
+        train_data$prop_id,
+        train_data$click_bool,
+        train_data$booking_bool,
+        train_data$prediction_click,
+        train_data$prediction_book)
+
+colnames(x) = c("srch_id", "prop_id", "click_bool","booking_bool", "prediction_click","prediction_book")
+
+x = as.data.frame(x)
+x = x[order(x$srch_id,x$prediction_book,x$prediction_click, decreasing = T),]
+source("Assignment-2/src/ndcg.R")
+
+train_ndcg = nDCG(x, ignore_null=TRUE,debug = FALSE)
+
+save.image("Assignment-2/nb_RData")
 ###############################################
 # predict for test data
 ###############################################
